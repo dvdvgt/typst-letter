@@ -26,8 +26,8 @@
 
 #lorem(32)
 
-#lorem(64)
+#lorem(128)
 
-#lorem(32)
+#lorem(320)
 
 #lorem(16)

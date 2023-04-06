@@ -1,3 +1,12 @@
+
+#let default_address = [
+    Name\
+    Street, Street number\
+    ZIP, City
+]
+
+#let default_stroke = 0.75pt
+
 #let mk_header(
     name,
     address,
@@ -14,14 +23,8 @@
         ],
         align(bottom + right, contact)
     )
-    line(length: 100%, stroke: accent + 0.75pt)
+    line(length: 100%, stroke: accent + default_stroke)
 }
-
-#let default_address = [
-    Name\
-    Street, Street number\
-    ZIP, City
-]
 
 #let letter(
     sender_address: [],
@@ -35,6 +38,7 @@
     attachments: none,
     postal: false,
     accent: black,
+    duplex: true,
     content
 ) = {
     set text(12pt)
@@ -42,13 +46,22 @@
     set page(
         paper: "a4",
         margin: (top: 4.5cm, bottom: 2.5cm, left: 2.5cm, right: 2cm),
-        header: mk_header(sender_name, sender_address, sender_contact, accent),
+        header: locate(loc => {
+            if loc.page() == 1 {
+                mk_header(sender_name, sender_address, sender_contact, accent)
+            } else {
+                set text(size: 9pt)
+                set block(spacing: 0.64em)
+                [#sender_name #h(1fr) #date]
+                line(length: 100%, stroke: default_stroke)
+            }}),
+        numbering: "1/1", 
         // set up fold line if it is a postal letter
-        background: if postal {
-            set block(below: 0em)
-            align(top, line(start: (0mm, 105mm), length: 5mm))
-            align(top, line(start: (0mm, 105mm), length: 5mm))
-        }
+        background: locate(loc =>
+            if postal and (duplex or calc.mod(loc.page(), 2) != 0) {
+                place(top + left, line(start: (0mm, 105mm), length: 5mm))
+                place(top + left, line(start: (0mm, 210mm), length: 5mm))
+        })
     )
 
     let without_breaks = sender_address.children.filter(elem => elem != [ ] and elem != linebreak())
@@ -57,8 +70,14 @@
     // change height if content is too large. Standard is 5.5cm
     block(height: if postal { 4.5cm } else { 2.5cm })[
         #set block(spacing: 0mm)
-        #if postal { block(width: 100%, height: 17.7mm, text(size: 9pt, sender_name + " • " + without_breaks.join(" • "))) }
-        #align(top + left, receiver)
+        #if postal {
+            block(
+                width: 100%,
+                height: 17.7mm,
+                underline(text(size: 9pt, sender_name + " • " + without_breaks.join(" • ")))
+            )
+        }
+        #move(dx: 5mm, align(top + left, receiver))
     ]
 
     // date
@@ -96,31 +115,3 @@
         ]
     }
 }
-
-
-#show: letter.with(
-    sender_name: "Name",
-    sender_address: [
-        Street, Street number\
-        ZIP, City\
-    ],
-    sender_contact: [
-        0123456789 *|* #link("mailto:name@mail.com")
-    ],
-    date: "31.12.2099",
-    subject: lorem(10),
-    greeting: "Dear Mr./Ms. Name,",
-    valediction: "Sincerely,",
-    attachments: [
-        #set list(tight: true)
-        - Resume
-        - Certificate
-    ],
-    postal: false
-)
-
-#lorem(50)
-
-#lorem(70)
-
-#lorem(30)
