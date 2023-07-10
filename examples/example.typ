@@ -1,4 +1,4 @@
-#import "template.typ": letter
+#import "../din5008-letter.typ": letter
 
 #show: letter.with(
     // sender information
@@ -20,7 +20,9 @@
     subject: lorem(10),
     greeting: "Dear Name Surname",
     valediction: "Regards",
-    postal: true,
+    attachments: [
+        - CV
+    ],
     accent: rgb(0, 0, 128)
 )
 
