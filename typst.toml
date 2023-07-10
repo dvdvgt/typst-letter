@@ -1,0 +1,7 @@
+[package]
+name = "din5008-letter"
+version = "0.1.0"
+entrypoint = "din5008-letter.typ"
+authors = ["David Voigt"]
+license = "MIT"
+description = "Letter template inspired by the DIN5008 standard."
