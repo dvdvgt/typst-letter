@@ -2,7 +2,7 @@
 
 A [typst](https://typst.app) template for a [DIN 5008](https://de.wikipedia.org/wiki/DIN_5008) inspired letter with the goal to fit nicely into C6/5 envelops.
 
-![example picture](example.png)
+![example picture](examples/example.png)
 
 # Contributing
 
